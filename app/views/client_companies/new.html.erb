@@ -1,0 +1,31 @@
+<h1 class="text-center mb-4">New Client</h1>
+
+<% if current_user.has_permission?("create:client_company") %>
+  <%= form_with(model: @client_company, url: clients_path, local: true, class: "card p-4") do |f| %>
+
+    <% if @client_company.errors.any? %>
+      <div class="alert alert-danger">
+        <ul>
+          <% @client_company.errors.full_messages.each do |message| %>
+            <li><%= message %></li>
+          <% end %>
+        </ul>
+      </div>
+    <% end %>
+
+    <div class="form-group">
+      <%= f.label :name, class: "form-label fw-bold" %>
+      <%= f.text_field :name, class: "form-control", placeholder: "Enter client name" %>
+    </div>
+
+    <div class="mt-3">
+      <%= f.submit "Create Client", class: "btn btn-primary" %>
+    </div>
+  <% end %>
+<% else %>
+  <div class="alert alert-warning">
+    You are not authorized to create a new client.
+  </div>
+<% end %>
+
+<%= link_to "Back to Clients", clients_path, class: "btn btn-secondary mt-3" %>

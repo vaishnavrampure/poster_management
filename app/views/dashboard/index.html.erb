@@ -1,0 +1,57 @@
+<div class="container mt-4">
+  <div class="text-center mb-4">
+    <h1 class="fw-bold">Welcome, <%= @user.name %>!</h1>
+    <p class="lead">This is your dashboard.</p>
+  </div>
+
+  <div class="card shadow-sm">
+    <div class="card-body">
+      <ul class="list-group list-group-flush">
+        <% if current_user.has_permission?("manage:users") %>
+          <li class="list-group-item">
+            <%= link_to "Manage Users", users_path, class: "text-decoration-none" %>
+          </li>
+        <% end %>
+
+        <% if current_user.has_permission?("manage:campaigns") || current_user.has_permission?("view:campaigns") %>
+          <li class="list-group-item">
+            <%= link_to "Manage Campaigns", campaigns_path, class: "text-decoration-none" %>
+          </li>
+        <% end %>
+
+        <% if current_user.has_permission?("manage:client_companies") %>
+          <li class="list-group-item">
+            <%= link_to "Manage Clients", clients_path, class: "text-decoration-none" %>
+          </li>
+        <% end %>
+
+        <% if current_user.has_permission?("view:images") %>
+          <li class="list-group-item">
+            <%= link_to "View Images", images_path, class: "text-decoration-none" %>
+          </li>
+        <% end %>
+
+        <% if current_user.has_permission?("approve:image") || current_user.has_permission?("reject:image") %>
+          <li class="list-group-item">
+            <%= link_to "Approve/Reject Images", moderation_queue_images_path, class: "text-decoration-none" %>
+          </li>
+          <li class="list-group-item">
+            <%= link_to "Image history", moderation_history_images_path, class: "text-decoration-none" %>
+          </li>
+        <% end %>
+
+        <% if current_user.has_permission?("upload:campaign_image") %>
+          <li class="list-group-item">
+            <%= link_to "Upload New Image", campaigns_path, class: "btn btn-success btn-sm" %>
+          </li>
+        <% end %>
+      </ul>
+    </div>
+  </div>
+
+  <div class="text-center mt-4">
+    <%= form_with url: logout_path, method: :delete, local: true do %>
+      <%= submit_tag 'Logout', class: 'btn btn-outline-danger' %>
+    <% end %>
+  </div>
+</div>

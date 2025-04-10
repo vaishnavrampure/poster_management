@@ -1,0 +1,20 @@
+<h1>Image Details</h1>
+
+<% if current_user.has_permission?("view:image") %>
+  <p><strong>Campaign:</strong> <%= @image.campaign.name if @image.campaign %></p>
+  <p><strong>Contractor:</strong> <%= @image.contractor.name if @image.contractor %></p>
+
+  <% if @image.file.attached? %>
+    <p><strong>Uploaded Image:</strong></p>
+    <%= image_tag @image.file, width: "300" %>
+  <% else %>
+    <p>No image uploaded.</p>
+  <% end %>
+
+  <%= link_to 'Back to Images', images_path %>
+<% else %>
+  <div class="alert alert-warning">
+    You are not authorized to view this image.
+  </div>
+  <%= link_to 'Back to Dashboard', dashboard_path, class: "btn btn-secondary mt-3" %>
+<% end %>

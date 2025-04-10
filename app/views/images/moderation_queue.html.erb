@@ -1,0 +1,25 @@
+
+<h1>Moderation History</h1>
+
+<% @images.each do |image| %>
+  <div class="card mb-3 p-3">
+    <% if image.file.attached? %>
+      <%= image_tag image.file, width: 300 %>
+    <% else %>
+      <p class="text-muted">No file attached</p>
+    <% end %>
+
+    <p><strong>Campaign:</strong> <%= image.campaign.name %></p>
+
+    <div class="d-flex gap-2">
+      <%= form_with url: approve_image_path(image), method: :post do %>
+        <%= submit_tag "Approve", class: "btn btn-success" %>
+      <% end %>
+
+      <%= form_with url: reject_image_path(image), method: :post, local: true do %>
+        <%= text_field_tag :rejection_note, nil, placeholder: "Reason", class: "form-control me-2" %>
+        <%= submit_tag "Reject", class: "btn btn-danger" %>
+      <% end %>
+    </div>
+  </div>
+<% end %>

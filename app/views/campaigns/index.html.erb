@@ -1,0 +1,63 @@
+<div class="container mt-4">
+  <h1 class="text-center mb-4">Campaigns List</h1>
+  
+  <% if current_user.has_permission?("create:campaign") %>
+    <div class="d-flex justify-content-between align-items-center mb-3">
+      <%= link_to 'New Campaign', new_campaign_path, class: 'btn btn-primary' %>
+    </div>
+  <% end %>
+
+  <% if @campaigns.any? %>
+    <table class="table table-striped table-bordered shadow-sm">
+      <thead class="table-dark">
+        <tr>
+          <th>Name</th>
+          <th>Status</th>
+          <th>Actions</th>
+        </tr>
+      </thead>
+      <tbody>
+        <% @campaigns.each do |campaign| %>
+          <tr>
+            <td colspan="2">
+              <% if current_user.has_permission?("update:campaign") %>
+                <%= form_with(model: campaign, url: campaign_path(campaign), method: :patch, local: true, class: "d-flex gap-2 align-items-center") do |f| %>
+                  <%= f.text_field :name, value: campaign.name, class: "form-control form-control-sm w-25" %>
+                  <%= f.select :status, ["Active", "Pending", "Completed"], { selected: campaign.status }, class: "form-select form-select-sm w-auto" %>
+                  <%= f.submit "Update", class: "btn btn-success btn-sm" %>
+                <% end %>
+              <% else %>
+                <strong>Name:</strong> <%= campaign.name %><br>
+                <strong>Status:</strong> <%= campaign.status %>
+              <% end %>
+            </td>
+
+            <td class="text-center">
+              <%= link_to 'Show', campaign_path(campaign), class: 'btn btn-info btn-sm me-2' %>
+
+              <% if current_user.has_permission?("update:campaign") %>
+                <%= link_to 'Edit', edit_campaign_path(campaign), class: 'btn btn-warning btn-sm me-2' %>
+              <% end %>
+
+              <% if current_user.has_permission?("delete:campaign") %>
+                <%= form_with url: campaign_path(campaign), method: :delete, local: true do %>
+                  <%= submit_tag "Delete", data: { confirm: "Are you sure?" }, class: "btn btn-danger btn-sm" %>
+                <% end %>
+              <% end %>
+
+              <% if campaign.status == "Active" && current_user.has_permission?("upload:campaign_image") %>
+                <%= link_to 'Upload New Image', new_campaign_image_path(campaign), class: 'btn btn-success btn-sm' %>
+              <% end %>
+            </td>
+          </tr>
+        <% end %>
+      </tbody>
+    </table>
+  <% else %>
+    <p class="text-center">No campaigns found.</p>
+  <% end %>
+
+  <div class="text-center mt-4">
+    <%= link_to 'Back to Dashboard', dashboard_path, class: 'btn btn-secondary' %>
+  </div>
+</div>

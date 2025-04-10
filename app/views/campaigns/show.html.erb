@@ -1,0 +1,31 @@
+<h1>Main Campaign: <%= @campaign.name %></h1>
+<p>Status: <%= @campaign.status %></p>
+
+<%= link_to "Back to All Campaigns", campaigns_path, class: "btn btn-primary mb-4" %>
+
+<% if current_user.has_permission?("upload:campaign_image") %>
+  <%= link_to "Upload New Image", new_campaign_image_path(@campaign), class: "btn btn-success" %>
+<% end %>
+
+<hr>
+<h2>Images for This Campaign</h2>
+
+<% if @campaign.images.any? %>
+  <div class="row">
+  <% @campaign.images.where(status: "approved").each do |image| %>
+      <% if image.file.attached? %>
+        <div class="col-md-3 mb-4">
+          <div class="card">
+          <%= image_tag url_for(image.file), class: "card-img-top img-fluid", style: "height: 300px; width: 300px;", alt: "Campaign Image" %>
+            <div class="card-body text-center">
+              <p><strong>Contractor:</strong> <%= image.contractor&.name || "Unknown" %></p>
+              <%= link_to 'Show', campaign_image_path(@campaign, image), class: 'btn btn-info btn-sm' %>
+            </div>
+          </div>
+        </div>
+      <% end %>
+    <% end %>
+  </div>
+<% else %>
+  <p>No images found for this campaign.</p>
+<% end %>

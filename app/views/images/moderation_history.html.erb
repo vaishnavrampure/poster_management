@@ -1,0 +1,20 @@
+<h1>Approved & Rejected Images</h1>
+
+<% @images.each do |image| %>
+  <div class="card mb-3 p-3">
+    <% if image.file.attached? %>
+      <%= image_tag image.file, width: 300 %>
+    <% else %>
+      <p class="text-muted">No file attached.</p>
+    <% end %>
+
+    <p><strong>Status:</strong> <%= image.status.capitalize %></p>
+
+    <% if image.status == "rejected" && image.rejection_note.present? %>
+      <p><strong>Rejection Note:</strong> <%= image.rejection_note %></p>
+    <% end %>
+  </div>
+<% end %>
+<div class="mt-4 text-center">
+  <%= link_to "Back to Dashboard", dashboard_path, class: "btn btn-secondary" %>
+</div

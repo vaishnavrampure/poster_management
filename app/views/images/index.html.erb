@@ -1,0 +1,38 @@
+<div class="container mt-4">
+  <h1 class="text-center mb-4">Images</h1>
+
+  <% if @images.any? %>
+    <table class="table table-striped table-bordered">
+      <thead>
+        <tr>
+          <th>ID</th>
+          <th>Campaign</th>
+          <th>Status</th>
+          <th>Actions</th>
+        </tr>
+      </thead>
+      <tbody>
+        <% @images.each do |image| %>
+          <tr>
+            <td><%= image.id %></td>
+            <td><%= image.campaign&.name || "No Campaign" %></td>
+            <td><%= image.status %></td>
+            <td>
+              <%= link_to "Show", image_path(image) %>
+              
+              <% if current_user.has_permission?("update:image") %>
+                | <%= link_to "Edit", edit_image_path(image) %>
+              <% end %>
+
+              <% if current_user.has_permission?("delete:image") %>
+                | <%= link_to "Delete", image_path(image), method: :delete, data: { confirm: "Are you sure?" } %>
+              <% end %>
+            </td>
+          </tr>
+        <% end %>
+      </tbody>
+    </table>
+  <% else %>
+    <p>No images found.</p>
+  <% end %>
+</div>

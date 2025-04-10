@@ -1,0 +1,27 @@
+<% if current_user.has_permission?("view:client_company") %>
+  <h1><%= @client_company.name %></h1>
+
+  <% if current_user.has_permission?("view:campaign") %>
+    <h2>Campaigns</h2>
+    <% if @client_company.campaigns.exists? %>
+      <ul class="list-group">
+        <% @client_company.campaigns.each do |campaign| %>
+          <li class="list-group-item">
+            <%= campaign.name %> - <%= campaign.status %>
+          </li>
+        <% end %>
+      </ul>
+    <% else %>
+      <p>No campaigns found for this client company.</p>
+    <% end %>
+  <% else %>
+    <div class="alert alert-warning mt-3">
+      You are not authorized to view this client's campaigns.
+    </div>
+  <% end %>
+<% else %>
+  <div class="alert alert-warning">
+    You are not authorized to view this client.
+  </div>
+  <%= link_to "Back to Dashboard", dashboard_path, class: "btn btn-secondary mt-3" %>
+<% end %>
