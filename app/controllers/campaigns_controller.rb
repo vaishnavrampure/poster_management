@@ -66,11 +66,19 @@ class CampaignsController < ApplicationController
   def set_campaign
     if current_user.client?
       @campaign = Campaign.find_by(id: params[:id], client_company_id: current_user.client_company_id)
-      redirect_to campaigns_path, alert: "You are not authorized to view this campaign." unless @campaign
+    elsif current_user.contractor?
+      @campaign = Campaign.joins(:campaign_users)
+                          .where(id: params[:id], campaign_users: { user_id: current_user.id })
+                          .first
     else
-      @campaign = Campaign.find(params[:id])
+      @campaign = Campaign.find(params[:id]) # admin/employee
+    end
+  
+    unless @campaign
+      redirect_to campaigns_path, alert: "You are not authorized to view this campaign."
     end
   end
+  
   
 
   def campaign_params
