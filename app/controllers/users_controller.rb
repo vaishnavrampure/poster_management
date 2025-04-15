@@ -41,8 +41,9 @@ class UsersController < ApplicationController
   private
 
   def user_params
-    params.require(:user).permit(:name, :email, :role_id)
+    params.require(:user).permit(:name, :email, :password, :role_id)
   end
+  
   
 
   def authorize_manage_users

@@ -7,8 +7,13 @@ class ClientCompaniesController < ApplicationController
   end
 
   def show
-    @client_company = ClientCompany.find(params[:id])
+    if current_user.client?
+      @client_company = current_user.client_company
+    else
+      @client_company = ClientCompany.find(params[:id])
+    end
   end
+  
 
   def new
     @client_company = ClientCompany.new

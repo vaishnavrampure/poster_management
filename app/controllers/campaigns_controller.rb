@@ -64,9 +64,14 @@ class CampaignsController < ApplicationController
   private
 
   def set_campaign
-    @campaign = Campaign.find_by(id: params[:id])
-    redirect_to campaigns_path, alert: "Campaign not found" unless @campaign
+    if current_user.client?
+      @campaign = Campaign.find_by(id: params[:id], client_company_id: current_user.client_company_id)
+      redirect_to campaigns_path, alert: "You are not authorized to view this campaign." unless @campaign
+    else
+      @campaign = Campaign.find(params[:id])
+    end
   end
+  
 
   def campaign_params
     params.require(:campaign).permit(:name, :status, :client_company_id)

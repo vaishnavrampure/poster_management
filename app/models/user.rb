@@ -6,6 +6,7 @@ class User < ApplicationRecord
 
   validates :name, :email, presence: true
   validates :email, uniqueness: true
+  validates :password, presence: true, on: :create
 
   delegate :permissions, to: :role, allow_nil: true
 

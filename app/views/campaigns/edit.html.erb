@@ -9,7 +9,7 @@
 
     <div class="mb-3">
       <%= f.label :status, class: "form-label" %>
-      <%= f.select :status, Campaign.statuses.keys, {}, class: "form-select" %>
+   <%= f.select :status, ["Active", "Pending", "Completed"], {}, class: "form-select" %>
     </div>
 
     <%= f.submit "Update Campaign", class: "btn btn-primary" %>

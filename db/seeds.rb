@@ -21,11 +21,14 @@ end
 roles_with_permissions = {
   "admin" => %w[
     manage:users
+    create:user
     manage:campaigns
+    create:campaign
     manage:client_companies
     update:campaign
     update:user
     update:client_companies
+    create:client_companies
     view:campaigns
     view:images
     approve:image
