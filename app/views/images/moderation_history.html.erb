@@ -10,9 +10,9 @@
 
     <p><strong>Status:</strong> <%= image.status.capitalize %></p>
 
-    <% if image.status == "rejected" && image.rejection_note.present? %>
-      <p><strong>Rejection Note:</strong> <%= image.rejection_note %></p>
-    <% end %>
+    <% if image.status == "rejected" && image.rejection_reason.present? %>
+  <p><strong>Rejection Note:</strong> <%= image.rejection_reason %></p>
+<% end %>
   </div>
 <% end %>
 <div class="mt-4 text-center">

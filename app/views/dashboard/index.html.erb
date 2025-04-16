@@ -2,18 +2,21 @@
   <div class="text-center mb-4">
     <h1 class="fw-bold">Welcome, <%= @user.name %>!</h1>
     <p class="lead">This is your dashboard.</p>
+    <p class="text-muted">
+  Role(s): <%= current_user.roles.pluck(:name).uniq.join(", ").titleize %>
+</p>
   </div>
 
   <div class="card shadow-sm">
     <div class="card-body">
       <ul class="list-group list-group-flush">
-        <% if current_user.has_permission?("manage:users") %>
+        <% if current_user.has_permission?("manage:users") && !current_user.contractor? %>
           <li class="list-group-item">
             <%= link_to "Manage Users", users_path, class: "text-decoration-none" %>
           </li>
         <% end %>
 
-        <% if current_user.has_permission?("manage:campaigns") || current_user.has_permission?("view:campaigns") %>
+        <% if current_user.has_permission?("manage:campaigns")%>
           <li class="list-group-item">
             <%= link_to "Manage Campaigns", campaigns_path, class: "text-decoration-none" %>
           </li>
@@ -40,14 +43,56 @@
           </li>
         <% end %>
 
-        <% if current_user.has_permission?("upload:campaign_image") %>
+        <% if current_user.has_permission?("upload:campaign_image") && current_user.contractor_campaigns.any? && !current_user.contractor? %>
           <li class="list-group-item">
-            <%= link_to "Upload New Image", campaigns_path, class: "btn btn-success btn-sm" %>
+            <%= link_to "Upload New Image", new_campaign_image_path(current_user.contractor_campaigns.first), class: "btn btn-success btn-sm" %>
           </li>
         <% end %>
       </ul>
     </div>
   </div>
+
+  <% if current_user.has_permission?("view:campaigns") %>
+    <div class="card mt-4 shadow-sm">
+      <div class="card-body">
+        <h5 class="fw-bold mb-3">
+          <% if current_user.admin? || current_user.employee? %>
+            All Campaigns
+          <% elsif current_user.client? %>
+            Company Campaigns
+          <% else %>
+            Assigned Campaigns
+          <% end %>
+        </h5>
+
+        <% campaigns =
+          if current_user.admin? || current_user.employee?
+            Campaign.all
+          elsif current_user.client?
+            Campaign.where(client_company_id: current_user.client_company_id)
+          else
+            current_user.contractor_campaigns
+          end
+        %>
+
+        <% if campaigns.any? %>
+          <ul class="list-group">
+            <% campaigns.each do |campaign| %>
+              <li class="list-group-item d-flex justify-content-between align-items-center">
+                <div>
+                  <strong><%= campaign.name %></strong>
+                  <span class="text-muted">– <%= campaign.status %></span>
+                </div>
+                <%= link_to 'View', campaign_path(campaign), class: 'btn btn-outline-primary btn-sm' %>
+              </li>
+            <% end %>
+          </ul>
+        <% else %>
+          <p class="text-muted">No campaigns available.</p>
+        <% end %>
+      </div>
+    </div>
+  <% end %>
 
   <div class="text-center mt-4">
     <%= form_with url: logout_path, method: :delete, local: true do %>

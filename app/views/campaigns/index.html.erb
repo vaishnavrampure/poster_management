@@ -1,6 +1,6 @@
 <div class="container mt-4">
   <h1 class="text-center mb-4">Campaigns List</h1>
-  
+
   <% if current_user.has_permission?("create:campaign") %>
     <div class="d-flex justify-content-between align-items-center mb-3">
       <%= link_to 'New Campaign', new_campaign_path, class: 'btn btn-primary' %>
@@ -34,17 +34,14 @@
 
             <td class="text-center">
               <%= link_to 'Show', campaign_path(campaign), class: 'btn btn-info btn-sm me-2' %>
-
               <% if current_user.has_permission?("update:campaign") %>
                 <%= link_to 'Edit', edit_campaign_path(campaign), class: 'btn btn-warning btn-sm me-2' %>
               <% end %>
-
               <% if current_user.has_permission?("delete:campaign") %>
                 <%= form_with url: campaign_path(campaign), method: :delete, local: true do %>
                   <%= submit_tag "Delete", data: { confirm: "Are you sure?" }, class: "btn btn-danger btn-sm" %>
                 <% end %>
               <% end %>
-
               <% if campaign.status == "Active" && current_user.has_permission?("upload:campaign_image") %>
                 <%= link_to 'Upload New Image', new_campaign_image_path(campaign), class: 'btn btn-success btn-sm' %>
               <% end %>
@@ -53,6 +50,23 @@
         <% end %>
       </tbody>
     </table>
+  <% elsif current_user.contractor? && current_user.contractor_campaigns.any? %>
+    <ul class="list-group">
+      <% current_user.contractor_campaigns.each do |campaign| %>
+        <li class="list-group-item d-flex justify-content-between align-items-center">
+          <div>
+            <strong><%= campaign.name %></strong>
+            <span class="text-muted">– <%= campaign.status %></span>
+          </div>
+          <div class="btn-group">
+            <%= link_to 'View', campaign_path(campaign), class: 'btn btn-outline-primary btn-sm' %>
+            <% if campaign.status == "Active" && current_user.has_permission?("upload:campaign_image") %>
+              <%= link_to 'Upload Image', new_campaign_image_path(campaign), class: 'btn btn-success btn-sm' %>
+            <% end %>
+          </div>
+        </li>
+      <% end %>
+    </ul>
   <% else %>
     <p class="text-center">No campaigns found.</p>
   <% end %>

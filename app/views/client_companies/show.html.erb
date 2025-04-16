@@ -1,27 +1,21 @@
-<% if current_user.has_permission?("view:client_company") %>
-  <h1><%= @client_company.name %></h1>
+<h1><%= @campaign.name %></h1>
+<p>Status: <%= @campaign.status %></p>
 
-  <% if current_user.has_permission?("view:campaign") %>
-    <h2>Campaigns</h2>
-    <% if @client_company.campaigns.exists? %>
-      <ul class="list-group">
-        <% @client_company.campaigns.each do |campaign| %>
-          <li class="list-group-item">
-            <%= campaign.name %> - <%= campaign.status %>
-          </li>
-        <% end %>
-      </ul>
-    <% else %>
-      <p>No campaigns found for this client company.</p>
+<h3 class="mt-4">Campaign Images</h3>
+
+<% if @images.any? %>
+  <div class="row">
+    <% @images.each do |image| %>
+      <div class="col-md-3 mb-3">
+        <div class="card shadow-sm">
+          <%= image_tag image.file.url, class: "card-img-top", alt: "Campaign image" %>
+          <div class="card-body p-2">
+            <p class="card-text text-muted small mb-0">Uploaded at <%= image.created_at.strftime("%b %d, %Y") %></p>
+          </div>
+        </div>
+      </div>
     <% end %>
-  <% else %>
-    <div class="alert alert-warning mt-3">
-      You are not authorized to view this client's campaigns.
-    </div>
-  <% end %>
-<% else %>
-  <div class="alert alert-warning">
-    You are not authorized to view this client.
   </div>
-  <%= link_to "Back to Dashboard", dashboard_path, class: "btn btn-secondary mt-3" %>
+<% else %>
+  <p>No images uploaded for this campaign yet.</p>
 <% end %>

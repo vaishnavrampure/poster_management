@@ -3,12 +3,13 @@ class CampaignsController < ApplicationController
   before_action :set_campaign, only: [:show, :edit, :update, :destroy]
 
   def index
-    if current_user.client?
-      @campaigns = Campaign.where(client_company_id: current_user.client_company_id)
-                           .where("status = ? OR (status = ? AND updated_at >= ?)", "Active", "Completed", 1.month.ago)
+    if current_user.role == "contractor"
+      @campaigns = current_user.contractor_campaigns
+    elsif current_user.role == "client"
+      @campaigns = Campaign.where(client_id: current_user.id)
     else
       @campaigns = Campaign.all
-    end
+    end    
   end
   
 
@@ -74,9 +75,6 @@ class CampaignsController < ApplicationController
       @campaign = Campaign.find(params[:id]) # admin/employee
     end
   
-    unless @campaign
-      redirect_to campaigns_path, alert: "You are not authorized to view this campaign."
-    end
   end
   
   

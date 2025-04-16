@@ -37,9 +37,12 @@ class ImagesController < ApplicationController
   end
   
   def reject
-    image = Image.find(params[:id])
-    image.update!(status: "rejected", rejection_note: params[:rejection_note])
-    redirect_to moderation_queue_images_path, notice: "Image rejected."
+    @image = Image.find(params[:id])
+    if @image.update(status: "rejected", rejection_reason: params[:image][:rejection_reason])
+      redirect_to moderation_history_images_path, notice: "Image rejected with reason."
+    else
+      redirect_to moderation_history_images_path, alert: @image.errors.full_messages.to_sentence
+    end
   end
 
   private

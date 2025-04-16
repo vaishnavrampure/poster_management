@@ -1,4 +1,3 @@
-# Define all permissions used in the app
 permission_names = %w[
   manage:users
   manage:campaigns
@@ -17,7 +16,6 @@ permissions = permission_names.map do |name|
   Permission.find_or_create_by!(name: name)
 end
 
-# Roles with associated permissions (admin left unchanged)
 roles_with_permissions = {
   "admin" => %w[
     manage:users
@@ -48,6 +46,8 @@ roles_with_permissions = {
   "client" => %w[
     view:campaigns
     view:images
+    approve:image
+    reject:image
   ],
 
   "contractor" => %w[
@@ -57,6 +57,7 @@ roles_with_permissions = {
 }
 
 roles_with_permissions.each do |role_name, perm_names|
-  role = Role.find_or_create_by!(name: role_name)
+  # ✅ These are global roles (not tied to a specific campaign)
+  role = Role.find_or_create_by!(name: role_name, campaign_id: nil)
   role.permissions = Permission.where(name: perm_names)
 end
