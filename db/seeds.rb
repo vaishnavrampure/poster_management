@@ -33,23 +33,28 @@ roles_with_permissions = {
     reject:image
     upload:campaign_image
   ],
-
   "employee" => %w[
+    manage:users
+    create:user
+    delete:user
+    delete:campaign
+    delete:client_company
     manage:campaigns
+    create:campaign
+    manage:client_companies
+    update:campaign
+    update:user
+    update:client_companies
+    create:client_companies
     view:campaigns
     view:images
-    upload:campaign_image
     approve:image
     reject:image
   ],
-
   "client" => %w[
     view:campaigns
     view:images
-    approve:image
-    reject:image
   ],
-
   "contractor" => %w[
     view:campaigns
     upload:campaign_image

@@ -32,24 +32,42 @@
               <% end %>
             </td>
 
+            <!-- ACTIONS COLUMN -->
             <td class="text-center">
-              <%= link_to 'Show', campaign_path(campaign), class: 'btn btn-info btn-sm me-2' %>
-              <% if current_user.has_permission?("update:campaign") %>
-                <%= link_to 'Edit', edit_campaign_path(campaign), class: 'btn btn-warning btn-sm me-2' %>
-              <% end %>
-              <% if current_user.has_permission?("delete:campaign") %>
-                <%= form_with url: campaign_path(campaign), method: :delete, local: true do %>
-                  <%= submit_tag "Delete", data: { confirm: "Are you sure?" }, class: "btn btn-danger btn-sm" %>
-                <% end %>
-              <% end %>
-              <% if campaign.status == "Active" && current_user.has_permission?("upload:campaign_image") %>
-                <%= link_to 'Upload New Image', new_campaign_image_path(campaign), class: 'btn btn-success btn-sm' %>
+              <% if campaign.status == "Active" %>
+                <div class="d-flex flex-wrap justify-content-center gap-2">
+                  
+                  <%= link_to 'Show', campaign_path(campaign), class: 'btn btn-info btn-sm' %>
+
+                  <% if current_user.has_permission?("update:campaign") %>
+                    <%= link_to 'Edit', edit_campaign_path(campaign), class: 'btn btn-warning btn-sm' %>
+                  <% end %>
+
+                  <% if current_user.has_permission?("delete:campaign") %>
+                    <%= form_with url: campaign_path(campaign), method: :delete, local: true, class: "d-inline" do %>
+                      <%= submit_tag "Delete", class: "btn btn-danger btn-sm", data: { confirm: "Are you sure?" } %>
+                    <% end %>
+                  <% end %>
+
+                  <% if current_user.has_permission?("upload:campaign_image") %>
+                    <%= link_to 'Upload New Image', new_campaign_image_path(campaign), class: 'btn btn-success btn-sm' %>
+                  <% end %>
+
+                </div>
               <% end %>
             </td>
           </tr>
         <% end %>
       </tbody>
     </table>
+
+    <%# Optional: Add "Create Another Campaign" at the bottom %>
+    <% if current_user.has_permission?("manage:campaigns") %>
+      <div class="text-center my-3">
+        <%= link_to 'Create Another Campaign', new_campaign_path, class: 'btn btn-outline-primary' %>
+      </div>
+    <% end %>
+
   <% elsif current_user.contractor? && current_user.contractor_campaigns.any? %>
     <ul class="list-group">
       <% current_user.contractor_campaigns.each do |campaign| %>
@@ -60,15 +78,21 @@
           </div>
           <div class="btn-group">
             <%= link_to 'View', campaign_path(campaign), class: 'btn btn-outline-primary btn-sm' %>
-            <% if campaign.status == "Active" && current_user.has_permission?("upload:campaign_image") %>
+            <% if ["Active"].include?(campaign.status) && current_user.has_permission?("upload:campaign_image") %>
               <%= link_to 'Upload Image', new_campaign_image_path(campaign), class: 'btn btn-success btn-sm' %>
             <% end %>
           </div>
         </li>
       <% end %>
     </ul>
+
   <% else %>
-    <p class="text-center">No campaigns found.</p>
+    <div class="text-center">
+      <p>No campaigns found.</p>
+      <% if current_user.has_permission?("create:campaign") %>
+        <%= link_to 'Create Campaign', new_campaign_path, class: 'btn btn-primary mt-2' %>
+      <% end %>
+    </div>
   <% end %>
 
   <div class="text-center mt-4">

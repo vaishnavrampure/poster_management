@@ -6,33 +6,34 @@ class CampaignsController < ApplicationController
     if current_user.role == "contractor"
       @campaigns = current_user.contractor_campaigns
     elsif current_user.role == "client"
-      @campaigns = Campaign.where(client_id: current_user.id)
+      @campaigns = Campaign.where(client_company_id: current_user.client_company_id)
     else
       @campaigns = Campaign.all
-    end    
+    end
   end
+  
   
 
   def new
     @campaign = Campaign.new
+    @campaigns = Campaign.all
   end
+  
 
   def create
     @campaign = Campaign.new(campaign_params)
   
-   
-    @campaign.contractor_id = current_user.id 
-  
-    
-    @campaign.client_company_id = current_user.client_company_id if current_user.client?
-  
     if @campaign.save
-      redirect_to campaigns_path, notice: "Campaign created successfully"
+      contractor = User.find_by(id: @campaign.contractor_id)
+      contractor&.add_contractor_campaign(@campaign)
+      redirect_to campaigns_path, notice: "Campaign created and contractor assigned."
     else
-      flash[:alert] = @campaign.errors.full_messages.to_sentence
-      render :new
-    end  
+      render :new, alert: @campaign.errors.full_messages.join(", ")
+    end
   end
+  
+  
+  
 
    def show
     @campaign = Campaign.find(params[:id])
@@ -46,7 +47,7 @@ class CampaignsController < ApplicationController
     if @campaign.update(campaign_params)
       redirect_to campaigns_path, notice: 'Campaign updated successfully'
     else
-      render :edit
+      render :edit, alert: @campaign.errors.full_messages.join(", ")
     end
   end
 
@@ -63,7 +64,9 @@ class CampaignsController < ApplicationController
   
 
   private
-
+  def campaign_params
+    params.require(:campaign).permit(:name, :status, :client_company_id, :contractor_id)
+  end
   def set_campaign
     if current_user.client?
       @campaign = Campaign.find_by(id: params[:id], client_company_id: current_user.client_company_id)
@@ -76,10 +79,5 @@ class CampaignsController < ApplicationController
     end
   
   end
-  
-  
 
-  def campaign_params
-    params.require(:campaign).permit(:name, :status, :client_company_id)
-  end
 end

@@ -7,7 +7,10 @@ Rails.application.routes.draw do
 
   get "/dashboard", to: "dashboard#index"
 
-  resources :users
+  resources :users do
+    post :assign_campaign, on: :member
+  end
+  
   resources :campaigns
   
 

@@ -2,11 +2,10 @@ class User < ApplicationRecord
   has_secure_password
 
   belongs_to :client_company, optional: true
-  
 
   has_many :roles
   has_many :contractor_campaigns, -> { where(roles: { name: "contractor" }) }, through: :roles, source: :campaign
-  
+
   validates :name, :email, presence: true
   validates :email, uniqueness: true
   validates :password, presence: true, on: :create
@@ -41,6 +40,7 @@ class User < ApplicationRecord
   def permissions
     roles.includes(:permissions).flat_map(&:permissions).uniq
   end
+
   def assign_global_role!(role_name)
     roles_to_keep = [role_name]
     self.roles.where(campaign_id: nil).where.not(name: roles_to_keep).destroy_all
@@ -48,33 +48,51 @@ class User < ApplicationRecord
 
     roles_with_permissions = {
       "admin" => %w[
-         manage:users
-    create:user
-    manage:campaigns
-    create:campaign
-    manage:client_companies
-    update:campaign
-    update:user
-    update:client_companies
-    create:client_companies
-    view:campaigns
-    view:images
-    approve:image
-    reject:image
-    upload:campaign_image
+        manage:users
+        create:user
+        manage:campaigns
+        create:campaign
+        manage:client_companies
+        update:campaign
+        update:user
+        update:client_companies
+        create:client_companies
+        view:campaigns
+        view:images
+        approve:image
+        reject:image
+        upload:campaign_image
       ],
       "employee" => %w[
-        manage:campaigns view:campaigns view:images upload:campaign_image approve:image reject:image
+        manage:users
+        create:user
+        delete:user
+        delete:campaign
+        delete:client_company
+        manage:campaigns
+        create:campaign
+        manage:client_companies
+        update:campaign
+        update:user
+        update:client_companies
+        create:client_companies
+        view:campaigns
+        view:images
+        approve:image
+        reject:image
       ],
       "client" => %w[
-        view:campaigns view:images approve:image reject:image
+        view:campaigns
+        view:images
       ],
       "contractor" => %w[
-        view:campaigns upload:campaign_image
+        view:campaigns
+        upload:campaign_image
       ]
     }
 
     perms = Permission.where(name: roles_with_permissions[role_name])
-    role.permissions = perms
+    role.permissions = []
+    role.permissions << perms
   end
 end

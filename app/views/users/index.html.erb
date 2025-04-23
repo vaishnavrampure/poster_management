@@ -1,7 +1,7 @@
 <div class="container mt-4">
   <h1 class="text-center mb-4">Users List</h1>
 
-  <% if current_user.has_permission?("create:user") %>
+  <% if current_user.has_permission?("manage:users") %>
     <div class="d-flex justify-content-between align-items-center mb-3">
       <%= link_to 'New User', new_user_path, class: 'btn btn-primary' %>
     </div>
@@ -13,19 +13,21 @@
         <tr>
           <th>Name</th>
           <th>Role</th>
-          <th>Actions</th>
+          <th>Campaign Assignment</th>
+          <th class="text-center">Actions</th>
         </tr>
       </thead>
 
       <tbody>
         <% @users.each do |user| %>
           <tr>
+            <!-- Name Editing -->
             <td>
-              <% if current_user.has_permission?("update:user") %>
+              <% if current_user.has_permission?("manage:users") %>
                 <%= form_with(model: user, url: user_path(user), method: :patch, local: true) do |f| %>
                   <div class="d-flex gap-2">
                     <%= f.text_field :name, class: "form-control form-control-sm", placeholder: "Enter name" %>
-                    <%= f.submit "Update Name", class: "btn btn-success btn-sm" %>
+                    <%= f.submit "Update", class: "btn btn-success btn-sm" %>
                   </div>
                 <% end %>
               <% else %>
@@ -33,23 +35,41 @@
               <% end %>
             </td>
 
+            <!-- Role Editing -->
             <td>
-              <% if current_user.has_permission?("update:user") %>
+              <% if current_user.has_permission?("manage:users") %>
                 <%= form_with(model: user, url: user_path(user), method: :patch, local: true) do |f| %>
                   <div class="d-flex gap-2">
-                  <%= f.select :role_id,
-                  Role.all.pluck(:name, :id),
-                  { prompt: "Select Role" },
-                  class: "form-select form-select-sm" %>                
+                    <%= f.select :role,
+                      ["employee", "client", "contractor"],
+                      { selected: user.roles.find_by(campaign_id: nil)&.name, prompt: "Select Role" },
+                      class: "form-select form-select-sm" %>
                     <%= f.submit "Update Role", class: "btn btn-info btn-sm" %>
                   </div>
                 <% end %>
-             <% else %>
-  <%= user.role&.name || "cant access" %>
-<% end %>
+              <% else %>
+                <%= user.roles.find_by(campaign_id: nil)&.name || "N/A" %>
+              <% end %>
             </td>
+
+            <!-- Campaign Assignment -->
+            <td>
+              <% user_role = user.roles.find_by(campaign_id: nil)&.name %>
+              <% if ["contractor", "client"].include?(user_role) %>
+                <%= form_with url: assign_campaign_user_path(user), method: :post, local: true do %>
+                  <div class="d-flex gap-2">
+                    <%= select_tag "campaign_id", options_from_collection_for_select(Campaign.all, :id, :name), class: "form-select form-select-sm" %>
+                    <%= submit_tag "Assign", class: "btn btn-outline-primary btn-sm" %>
+                  </div>
+                <% end %>
+              <% else %>
+                <span class="text-muted">N/A</span>
+              <% end %>
+            </td>
+
+            <!-- Delete Action -->
             <td class="text-center">
-              <% if current_user.has_permission?("delete:user") %>
+              <% if current_user.has_permission?("manage:users") %>
                 <%= link_to 'Delete', user_path(user),
                             method: :delete,
                             data: { confirm: 'Are you sure?' },

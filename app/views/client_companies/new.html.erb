@@ -1,6 +1,6 @@
 <h1 class="text-center mb-4">New Client</h1>
 
-<% if current_user.has_permission?("create:client_company") %>
+<% if current_user.has_permission?("manage:client_companies") %>
   <%= form_with(model: @client_company, url: clients_path, local: true, class: "card p-4") do |f| %>
 
     <% if @client_company.errors.any? %>

@@ -1,23 +1,18 @@
-<h1>Upload Image for <%= @campaign.name %></h1>
+<div class="container mt-4">
+  <h1 class="mb-4">Upload Image for <%= @campaign.name %></h1>
 
-<% if current_user.has_permission?("upload:campaign_image") %>
-  <%= form_with model: [@campaign, @image], local: true, html: { multipart: true } do |form| %>
-    <div class="mb-3">
-      <%= form.label :contractor_id, "Select Contractor", class: "form-label fw-bold" %>
-      <%= form.collection_select :contractor_id, User.where(role: "contractor"), :id, :name, {}, { class: "form-select" } %>
-    </div>
+  <%= form_with(model: @image, url: campaign_images_path(@campaign), local: true, html: { multipart: true }) do |form| %>
+    
+    <!-- Set contractor_id silently to the current logged-in user -->
+    <%= form.hidden_field :contractor_id, value: current_user.id %>
 
+    <!-- File input -->
     <div class="mb-3">
-      <%= form.label :file, class: "form-label fw-bold" %>
+      <%= form.label :file, "File", class: "form-label fw-bold" %>
       <%= form.file_field :file, class: "form-control" %>
     </div>
 
-    <div>
-      <%= form.submit 'Upload Image', class: 'btn btn-primary' %>
-    </div>
+    <!-- Submit button -->
+    <%= form.submit "Upload Image", class: "btn btn-primary" %>
   <% end %>
-<% else %>
-  <div class="alert alert-warning">
-    You are not authorized to upload images for this campaign.
-  </div>
-<% end %>
+</div>
