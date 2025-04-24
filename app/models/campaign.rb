@@ -4,6 +4,7 @@ class Campaign < ApplicationRecord
   belongs_to :contractor, class_name: "User"
   belongs_to :client_company
   has_many :roles, dependent: :destroy
+
   
   validates :name, :status, presence: true
   validates :status, inclusion: { in: ["Active", "Pending", "Completed"] }

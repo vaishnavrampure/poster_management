@@ -23,7 +23,9 @@
           <%= image_tag url_for(image.file), class: "card-img-top img-fluid", style: "height: 300px; width: 300px;", alt: "Campaign Image" %>
             <div class="card-body text-center">
               <p><strong>Contractor:</strong> <%= image.contractor&.name || "Unknown" %></p>
+              <% if current_user.has_permission?("view:image") %>
               <%= link_to 'Show', campaign_image_path(@campaign, image), class: 'btn btn-info btn-sm' %>
+              <% end %>
             </div>
           </div>
         </div>

@@ -6,7 +6,7 @@ class CampaignsController < ApplicationController
     if current_user.role == "contractor"
       @campaigns = current_user.contractor_campaigns
     elsif current_user.role == "client"
-      @campaigns = Campaign.where(client_company_id: current_user.client_company_id)
+      @campaigns = Campaign.where(id: current_user.roles.where(name: "client").pluck(:campaign_id))
     else
       @campaigns = Campaign.all
     end
@@ -20,17 +20,22 @@ class CampaignsController < ApplicationController
   end
   
 
+ 
   def create
     @campaign = Campaign.new(campaign_params)
   
+    # If the creator is a client, assign their company automatically
+    if current_user.client?
+      @campaign.client_company_id = current_user.client_company_id
+    end
+  
     if @campaign.save
-      contractor = User.find_by(id: @campaign.contractor_id)
-      contractor&.add_contractor_campaign(@campaign)
-      redirect_to campaigns_path, notice: "Campaign created and contractor assigned."
+      redirect_to campaigns_path, notice: 'Campaign created successfully.'
     else
-      render :new, alert: @campaign.errors.full_messages.join(", ")
+      render :new
     end
   end
+  
   
   
   
@@ -65,8 +70,9 @@ class CampaignsController < ApplicationController
 
   private
   def campaign_params
-    params.require(:campaign).permit(:name, :status, :client_company_id, :contractor_id)
+    params.require(:campaign).permit(:name, :status, :contractor_id, :client_company_id)
   end
+  
   def set_campaign
     if current_user.client?
       @campaign = Campaign.find_by(id: params[:id], client_company_id: current_user.client_company_id)

@@ -10,9 +10,6 @@ Rails.application.routes.draw do
   resources :users do
     post :assign_campaign, on: :member
   end
-  
-  resources :campaigns
-  
 
   resources :client_companies, path: :clients, as: :clients
 
@@ -20,7 +17,7 @@ Rails.application.routes.draw do
     resources :images, only: [:index, :new, :create, :show]
   end
 
-  resources :images, only: [] do
+  resources :images, only: [:index] do
     collection do
       get :moderation_queue
       get :moderation_history
@@ -30,6 +27,5 @@ Rails.application.routes.draw do
       post :approve
       post :reject
     end
-  end 
-  resources :images 
+  end
 end

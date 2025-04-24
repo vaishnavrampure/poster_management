@@ -1,22 +1,21 @@
 <div class="container mt-4">
   <div class="text-center mb-4">
-    <h1 class="fw-bold">Welcome, <%= @user.name %>!</h1>
+    <h1 class="fw-bold">Welcome, <%= current_user.name %>!</h1>
     <p class="lead">This is your dashboard.</p>
-    <p class="text-muted">
-  Role(s): <%= current_user.roles.pluck(:name).uniq.join(", ").titleize %>
-</p>
+    <% global_role = current_user.roles.find_by(campaign_id: nil)&.name %>
+    <p>Role: <%= global_role&.capitalize || "N/A" %></p>
   </div>
 
   <div class="card shadow-sm">
     <div class="card-body">
       <ul class="list-group list-group-flush">
-        <% if current_user.has_permission?("manage:users") && !current_user.contractor? %>
+        <% if current_user.has_permission?("manage:users") %>
           <li class="list-group-item">
             <%= link_to "Manage Users", users_path, class: "text-decoration-none" %>
           </li>
         <% end %>
 
-        <% if current_user.has_permission?("manage:campaigns")%>
+        <% if current_user.has_permission?("manage:campaigns") %>
           <li class="list-group-item">
             <%= link_to "Manage Campaigns", campaigns_path, class: "text-decoration-none" %>
           </li>
@@ -27,27 +26,20 @@
             <%= link_to "Manage Clients", clients_path, class: "text-decoration-none" %>
           </li>
         <% end %>
+        <% if !current_user.client? && current_user.has_permission?("view:images") %>
+  <li class="list-group-item">
+    <%= link_to "View Images", images_path, class: "text-decoration-none" %>
+  </li>
+<% end %>
 
-        <% if current_user.has_permission?("view:images") %>
-          <li class="list-group-item">
-            <%= link_to "View Images", images_path, class: "text-decoration-none" %>
-          </li>
-        <% end %>
-
-        <% if current_user.has_permission?("approve:image") || current_user.has_permission?("reject:image") %>
-          <li class="list-group-item">
-            <%= link_to "Approve/Reject Images", moderation_queue_images_path, class: "text-decoration-none" %>
-          </li>
-          <li class="list-group-item">
-            <%= link_to "Image history", moderation_history_images_path, class: "text-decoration-none" %>
-          </li>
-        <% end %>
-
-        <% if current_user.has_permission?("upload:campaign_image") && current_user.contractor_campaigns.any? && !current_user.contractor? %>
-          <li class="list-group-item">
-            <%= link_to "Upload New Image", new_campaign_image_path(current_user.contractor_campaigns.first), class: "btn btn-success btn-sm" %>
-          </li>
-        <% end %>
+<% if current_user.has_permission?("approve:image") || current_user.has_permission?("reject:image") || current_user.contractor? || current_user.client? %>
+  <li class="list-group-item">
+    <%= link_to "Approve/Reject Images", moderation_queue_images_path, class: "text-decoration-none" %>
+  </li>
+  <li class="list-group-item">
+    <%= link_to "Image History", moderation_history_images_path, class: "text-decoration-none" %>
+  </li>
+<% end %>
       </ul>
     </div>
   </div>
@@ -75,6 +67,10 @@
           end
         %>
 
+        <% if current_user.client? && current_user.client_company.present? %>
+          <p class="mb-3"><strong>Company:</strong> <%= current_user.client_company.name %></p>
+        <% end %>
+
         <% if campaigns.any? %>
           <ul class="list-group">
             <% campaigns.each do |campaign| %>
@@ -96,7 +92,7 @@
 
   <div class="text-center mt-4">
     <%= form_with url: logout_path, method: :delete, local: true do %>
-      <%= submit_tag 'Logout', class: 'btn btn-outline-danger' %>
+      <%= submit_tag 'Logout', class: "btn btn-outline-danger" %>
     <% end %>
   </div>
 </div>

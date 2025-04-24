@@ -9,7 +9,12 @@
 
     <div class="mb-3">
       <%= f.label :status, class: "form-label" %>
-   <%= f.select :status, ["Active", "Pending", "Completed"], {}, class: "form-select" %>
+      <%= f.select :status, ["Active", "Pending", "Completed"], {}, class: "form-select" %>
+    </div>
+
+    <div class="mb-3">
+      <%= f.label :client_company_id, "Client Company", class: "form-label" %>
+      <%= f.collection_select :client_company_id, ClientCompany.all, :id, :name, { include_blank: "Select a company" }, class: "form-select" %>
     </div>
 
     <%= f.submit "Update Campaign", class: "btn btn-primary" %>

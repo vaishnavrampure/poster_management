@@ -1,26 +1,30 @@
-
-<h1>Moderation History</h1>
-
 <% @images.each do |image| %>
   <div class="card mb-3 p-3">
     <% if image.file.attached? %>
       <%= image_tag image.file, width: 300 %>
-    <% else %>
-      <p class="text-muted">No file attached</p>
     <% end %>
 
     <p><strong>Campaign:</strong> <%= image.campaign.name %></p>
 
     <div class="d-flex gap-2">
-      <%= form_with url: approve_image_path(image), method: :post do %>
-        <%= submit_tag "Approve", class: "btn btn-success" %>
+      <% if current_user.has_permission?("approve:image") %>
+        <%= form_with url: approve_image_path(image), method: :post do %>
+          <%= submit_tag "Approve", class: "btn btn-success" %>
+        <% end %>
+      <% elsif current_user.client? %>
+        <button class="btn btn-success" disabled>Approve</button>
       <% end %>
 
-      <%= form_with url: reject_image_path(image), method: :post, local: true do |f| %>
-  <%= hidden_field_tag "image[status]", "rejected" %>
-  <%= text_field_tag "image[rejection_reason]", nil, placeholder: "Reason", class: "form-control me-2", required: true %>
-  <%= submit_tag "Reject", class: "btn btn-danger" %>
-<% end %>
+      <% if current_user.has_permission?("reject:image") %>
+        <%= form_with url: reject_image_path(image), method: :post, local: true do |f| %>
+          <%= hidden_field_tag "image[status]", "rejected" %>
+          <%= text_field_tag "image[rejection_reason]", nil, placeholder: "Reason", class: "form-control me-2" %>
+          <%= submit_tag "Reject", class: "btn btn-danger" %>
+        <% end %>
+      <% elsif current_user.client? %>
+        <input type="text" class="form-control me-2" placeholder="Reason" disabled />
+        <button class="btn btn-danger" disabled>Reject</button>
+      <% end %>
     </div>
   </div>
 <% end %>

@@ -21,33 +21,25 @@
           <tbody>
             <% @client_companies.each do |client_company| %>
               <tr>
-                <% if current_user.has_permission?("update:client_companies") %>
-                  <!-- UPDATE FORM -->
-                  <%= form_with(model: client_company, url: client_path(client_company), method: :patch, local: true) do |f| %>
-                    <td class="ps-3">
-                      <%= f.text_field :name, class: "form-control form-control-sm", value: client_company.name %>
-                    </td>
-                    <td>
-                      <%= f.select :status, options_for_select(["Pending", "Active", "Inactive"], selected: client_company.status), {}, class: "form-select form-select-sm" %>
-                    </td>
-                    <td class="text-center">
-                      <div class="d-flex justify-content-center gap-2">
-                        <%= f.submit "Update", class: "btn btn-success btn-sm" %>
-                      </div>
-                    </td>
-                  <% end %>
+                <td class="ps-3"><%= client_company.name %></td>
+                <td><%= client_company.status %></td>
+                <td class="text-center">
+                  <% if current_user.has_permission?("update:client_companies") || current_user.has_permission?("delete:client_company") %>
+                    <div class="d-flex justify-content-center gap-2">
+                      <% if current_user.has_permission?("update:client_companies") %>
+                        <%= link_to "Edit", edit_client_path(client_company), class: "btn btn-warning btn-sm" %>
+                      <% end %>
 
-                  <!-- DELETE FORM (outside update form) -->
-                  <td class="text-center">
-                    <%= form_with model: client_company, url: client_path(client_company), method: :delete, local: true, class: "d-inline" do %>
-                      <%= submit_tag "Delete", class: "btn btn-danger btn-sm", data: { confirm: "Are you sure?" } %>
-                    <% end %>
-                  </td>
-                <% else %>
-                  <td class="ps-3"><%= client_company.name %></td>
-                  <td><%= client_company.status %></td>
-                  <td class="text-center">No access</td>
-                <% end %>
+                      <% if current_user.has_permission?("update:client_companies") %>
+                        <%= form_with model: client_company, url: client_path(client_company), method: :delete, local: true, class: "d-inline" do %>
+                          <%= submit_tag "Delete", class: "btn btn-danger btn-sm", data: { confirm: "Are you sure?" } %>
+                        <% end %>
+                      <% end %>
+                    </div>
+                  <% else %>
+                    No access
+                  <% end %>
+                </td>
               </tr>
             <% end %>
           </tbody>
