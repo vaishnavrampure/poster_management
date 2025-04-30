@@ -11,20 +11,14 @@ class CampaignsController < ApplicationController
       @campaigns = Campaign.all
     end
   end
-  
-  
 
   def new
     @campaign = Campaign.new
     @campaigns = Campaign.all
   end
-  
-
  
   def create
     @campaign = Campaign.new(campaign_params)
-  
-    # If the creator is a client, assign their company automatically
     if current_user.client?
       @campaign.client_company_id = current_user.client_company_id
     end
@@ -35,10 +29,6 @@ class CampaignsController < ApplicationController
       render :new
     end
   end
-  
-  
-  
-  
 
    def show
     @campaign = Campaign.find(params[:id])
