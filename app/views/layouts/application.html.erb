@@ -13,7 +13,7 @@
 
 <nav class="navbar navbar-expand-lg navbar-dark bg-dark shadow-sm sticky-top">
 <div class="container-fluid">
-  <%= link_to "🎯 Poster Dashboard", dashboard_path, class: "navbar-brand fw-bold" %>
+  <%= link_to "Poster Dashboard", dashboard_path, class: "navbar-brand fw-bold" %>
 
   <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarContent">
     <span class="navbar-toggler-icon"></span>
@@ -21,23 +21,13 @@
 
   <div class="collapse navbar-collapse" id="navbarContent">
     <ul class="navbar-nav me-auto mb-2 mb-lg-0">
-      <% if current_user&.has_permission?("view:campaigns") %>
-        <li class="nav-item">
-          <%= link_to "Campaigns", campaigns_path, class: "nav-link" %>
-        </li>
-      <% end %>
-      <% if current_user&.has_permission?("view:images") %>
-        <li class="nav-item">
-          <%= link_to "Images", images_path, class: "nav-link" %>
-        </li>
-      <% end %>
     </ul>
 
     <ul class="navbar-nav ms-auto">
       <% if current_user %>
         <li class="nav-item">
           <span class="navbar-text text-light me-3">
-            👋 Hello, <%= current_user.name %>
+            Hello, <%= current_user.name %>
           </span>
         </li>
         <li class="nav-item">

@@ -1,11 +1,9 @@
 <h1>Main Campaign: <%= @campaign.name %></h1>
 <p>Status: <%= @campaign.status %></p>
 
-<% if current_user.contractor? %>
-  <%= link_to "Back to Dashboard", dashboard_path, class: "btn btn-secondary mb-4" %>
-<% else %>
-  <%= link_to "Back to All Campaigns", campaigns_path, class: "btn btn-primary mb-4" %>
-<% end %>
+
+  <%= link_to "Back to All Dashboard",dashboard_path, class: "btn btn-primary mb-4" %>
+
 
 <% if current_user.has_permission?("upload:campaign_image") && @campaign.status != "Completed" %>
   <%= link_to "Upload New Image", new_campaign_image_path(@campaign), class: "btn btn-success" %>
@@ -16,15 +14,20 @@
 
 <% if @campaign.images.any? %>
   <div class="row">
-  <% @campaign.images.where(status: "approved").each do |image| %>
+    <% @campaign.images.each do |image| %>
       <% if image.file.attached? %>
-        <div class="col-md-3 mb-4">
-          <div class="card">
-          <%= image_tag url_for(image.file), class: "card-img-top img-fluid", style: "height: 300px; width: 300px;", alt: "Campaign Image" %>
-            <div class="card-body text-center">
+        <div class="col-md-4 mb-4">
+          <div class="card h-100">
+            <%= image_tag url_for(image.file), class: "card-img-top img-fluid", style: "height: 300px; object-fit: cover;", alt: "Campaign Image" %>
+            <div class="card-body">
               <p><strong>Contractor:</strong> <%= image.contractor&.name || "Unknown" %></p>
+              <p><strong>Status:</strong> <%= image.status.capitalize %></p>
+              <p><strong>Uploaded At:</strong> <%= image.created_at.strftime("%B %d, %Y %l:%M %p") %></p>
+              <% if image.status == "rejected" && image.rejection_reason.present? %>
+                <p><strong>Rejection Reason:</strong> <%= image.rejection_reason %></p>
+              <% end %>
               <% if current_user.has_permission?("view:image") %>
-              <%= link_to 'Show', campaign_image_path(@campaign, image), class: 'btn btn-info btn-sm' %>
+                <%= link_to 'Show', campaign_image_path(@campaign, image), class: 'btn btn-info btn-sm mt-2' %>
               <% end %>
             </div>
           </div>
