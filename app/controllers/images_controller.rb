@@ -1,9 +1,6 @@
 class ImagesController < ApplicationController
   before_action :require_login
   before_action :set_campaign, except: [:moderation_queue, :moderation_history, :approve, :reject]
-  
-  before_action :authorize_moderation_view, only: [:moderation_queue, :moderation_history]
-  before_action :authorize_moderation_action, only: [:approve, :reject]
 
   def index
     @images = @campaign.images
@@ -18,7 +15,7 @@ class ImagesController < ApplicationController
     @image.status = "pending"
 
     if @image.save
-      redirect_to dashboard_path, notice: 'Image uploaded successfully'
+      redirect_to campaign_images_path(@campaign), notice: 'Image uploaded successfully'
     else
       render :new
     end
@@ -57,7 +54,7 @@ class ImagesController < ApplicationController
 
     if @image.update(status: "rejected", rejection_reason: rejection_reason)
       notice_msg = "Image rejected" + (rejection_reason.present? ? " with reason." : ".")
-      redirect_to moderation_queue_images_path, notice: notice_msg
+      redirect_to moderation_history_images_path, notice: notice_msg
     else
       redirect_to moderation_history_images_path, alert: @image.errors.full_messages.to_sentence
     end
@@ -74,8 +71,7 @@ class ImagesController < ApplicationController
   def image_params
     params.require(:image).permit(:contractor_id, :file)
   end
-
-  # ✅ Allow contractors to view moderation queue/history
+  
   def authorize_moderation_view
     unless current_user.has_permission?("approve:image") ||
            current_user.has_permission?("reject:image") ||
@@ -86,7 +82,7 @@ class ImagesController < ApplicationController
   end
   
 
-  # 🔐 Only approvers/rejectors can take action
+  
   def authorize_moderation_action
     unless current_user.has_permission?("approve:image") ||
            current_user.has_permission?("reject:image")
