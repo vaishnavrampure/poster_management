@@ -1,8 +1,7 @@
 class ImagesController < ApplicationController
   before_action :require_login
   before_action :set_campaign, except: [:moderation_queue, :moderation_history, :approve, :reject]
-
-  # 🧠 Split permissions: view allowed for contractors, actions restricted
+  
   before_action :authorize_moderation_view, only: [:moderation_queue, :moderation_history]
   before_action :authorize_moderation_action, only: [:approve, :reject]
 

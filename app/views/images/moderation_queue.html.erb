@@ -5,7 +5,7 @@
     <% end %>
 
     <p><strong>Campaign:</strong> <%= image.campaign.name %></p>
-
+    
     <div class="d-flex gap-2">
       <% if current_user.has_permission?("approve:image") %>
         <%= form_with url: approve_image_path(image), method: :post do %>
@@ -28,3 +28,8 @@
     </div>
   </div>
 <% end %>
+
+<div class="mt-4 text-center">
+  <%= link_to "Back to Dashboard", dashboard_path, class: "btn btn-secondary" %>
+</div
+
