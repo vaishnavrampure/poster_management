@@ -6,9 +6,9 @@
 
   <% if @image.file.attached? %>
     <p><strong>Uploaded Image:</strong></p>
-    <%= image_tag @image.file, width: "300" %>
+    <%= image_tag @image.file, width: "250" %>
   <% else %>
-    <p>No image uploaded.</p>
+    <p>No image selected or found .</p>
   <% end %>
 
 
