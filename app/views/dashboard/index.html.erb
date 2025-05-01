@@ -1,4 +1,14 @@
 <div class="container mt-4">
+  <% campaigns =
+    if current_user.admin? || current_user.employee?
+      Campaign.all
+    elsif current_user.client?
+      Campaign.where(client_company_id: current_user.client_company_id)
+    else
+      current_user.contractor_campaigns
+    end
+  %>
+
   <div class="text-center mb-4">
     <h1 class="fw-bold">Welcome, <%= current_user.name %>!</h1>
     <p class="lead">This is your dashboard.</p>
@@ -26,20 +36,29 @@
             <%= link_to "Manage Clients", clients_path, class: "text-decoration-none" %>
           </li>
         <% end %>
-        <% if !current_user.client? && current_user.has_permission?("view:images") %>
-  <li class="list-group-item">
-    <%= link_to "View Images", images_path, class: "text-decoration-none" %>
-  </li>
-<% end %>
 
-<% if current_user.has_permission?("approve:image") || current_user.has_permission?("reject:image") || current_user.contractor? || current_user.client? %>
-  <li class="list-group-item">
-    <%= link_to "Approve/Reject Images", moderation_queue_images_path, class: "text-decoration-none" %>
-  </li>
-  <li class="list-group-item">
-    <%= link_to "Image History", moderation_history_images_path, class: "text-decoration-none" %>
-  </li>
-<% end %>
+        <% if !current_user.client? && current_user.has_permission?("view:images") %>
+          <li class="list-group-item">
+            <%= link_to "View Images", images_path, class: "text-decoration-none" %>
+          </li> 
+        <% end %>
+
+        <% if current_user.has_permission?("approve:image") || current_user.has_permission?("reject:image") || current_user.contractor? || current_user.client? %>
+          <li class="list-group-item">
+            <%= link_to "Approve/Reject Images", moderation_queue_images_path, class: "text-decoration-none" %>
+          </li>
+          <li class="list-group-item">
+            <%= link_to "Image History", moderation_history_images_path, class: "text-decoration-none" %>
+          </li>
+        <% end %>
+
+        <% if (current_user.has_permission?("view:images") || current_user.contractor? || current_user.client?) && campaigns.any? %>
+          <% campaigns.each do |campaign| %>
+            <li class="list-group-item">
+              <%= link_to "Image Status (#{campaign.name})", campaign_images_path(campaign), class: "text-decoration-none" %>
+            </li>
+          <% end %>
+        <% end %>
       </ul>
     </div>
   </div>
@@ -56,16 +75,6 @@
             Assigned Campaigns
           <% end %>
         </h5>
-
-        <% campaigns =
-          if current_user.admin? || current_user.employee?
-            Campaign.all
-          elsif current_user.client?
-            Campaign.where(client_company_id: current_user.client_company_id)
-          else
-            current_user.contractor_campaigns
-          end
-        %>
 
         <% if current_user.client? && current_user.client_company.present? %>
           <p class="mb-3"><strong>Company:</strong> <%= current_user.client_company.name %></p>

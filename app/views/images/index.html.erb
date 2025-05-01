@@ -18,7 +18,8 @@
             <td><%= image.campaign&.name || "No Campaign" %></td>
             <td><%= image.status %></td>
             <td>
-              <%= link_to "Show", image_path(image) %>
+            <%= link_to "Show", url_for(image.file), target: "_blank" if image.file.attached? %>
+
               
               <% if current_user.has_permission?("update:image") %>
                 | <%= link_to "Edit", edit_image_path(image) %>

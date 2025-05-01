@@ -18,7 +18,7 @@ class ImagesController < ApplicationController
     @image.status = "pending"
 
     if @image.save
-      redirect_to campaign_images_path(@campaign), notice: 'Image uploaded successfully'
+      redirect_to dashboard_path, notice: 'Image uploaded successfully'
     else
       render :new
     end
@@ -57,7 +57,7 @@ class ImagesController < ApplicationController
 
     if @image.update(status: "rejected", rejection_reason: rejection_reason)
       notice_msg = "Image rejected" + (rejection_reason.present? ? " with reason." : ".")
-      redirect_to moderation_history_images_path, notice: notice_msg
+      redirect_to moderation_queue_images_path, notice: notice_msg
     else
       redirect_to moderation_history_images_path, alert: @image.errors.full_messages.to_sentence
     end
