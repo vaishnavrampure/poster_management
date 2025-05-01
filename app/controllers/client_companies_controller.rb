@@ -2,7 +2,6 @@ class ClientCompaniesController < ApplicationController
   before_action :require_login
   before_action :authorize_manage_client_companies, only: [:new, :create, :edit, :update, :destroy]
   
-
   def index
     @client_companies = ClientCompany.all
   end
@@ -14,7 +13,6 @@ class ClientCompaniesController < ApplicationController
       @client_company = ClientCompany.find(params[:id])
     end
   end
-  
 
   def new
     @client_company = ClientCompany.new(status:"Pending")
@@ -39,10 +37,8 @@ class ClientCompaniesController < ApplicationController
     
     if @client_company.update(client_company_params)
       if params[:user_ids]
-        # First clear old associations
         User.where(client_company_id: @client_company.id).update_all(client_company_id: nil)
-  
-        # Then assign selected users
+
         User.where(id: params[:user_ids]).update_all(client_company_id: @client_company.id)
       end
   
@@ -51,7 +47,6 @@ class ClientCompaniesController < ApplicationController
       render :edit
     end
   end
-  
 
   def destroy
     @client_company = ClientCompany.find(params[:id])

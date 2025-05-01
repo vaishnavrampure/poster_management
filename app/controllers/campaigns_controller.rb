@@ -47,17 +47,13 @@ class CampaignsController < ApplicationController
   end
 
   def destroy
-    @campaign = Campaign.find(params[:id])
-    
+    @campaign = Campaign.find(params[:id]) 
     if @campaign.destroy
-      redirect_to campaigns_path, notice: "Campaign was successfully deleted."
+      redirect_to campaigns_path, notice: "Campaign is removed"
     else
       redirect_to campaign_path(@campaign), alert: "Failed to delete the campaign."
-    end
   end
-  
-  
-
+end
   private
   def campaign_params
     params.require(:campaign).permit(:name, :status, :contractor_id, :client_company_id)
@@ -71,9 +67,7 @@ class CampaignsController < ApplicationController
                           .where(id: params[:id], campaign_users: { user_id: current_user.id })
                           .first
     else
-      @campaign = Campaign.find(params[:id]) # admin/employee
+      @campaign = Campaign.find(params[:id])
     end
-  
   end
-
 end

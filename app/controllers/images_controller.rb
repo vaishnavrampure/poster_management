@@ -81,9 +81,7 @@ class ImagesController < ApplicationController
     end
   end
   
-
-  
-  def authorize_moderation_action
+ def authorize_moderation_action
     unless current_user.has_permission?("approve:image") ||
            current_user.has_permission?("reject:image")
       redirect_to dashboard_path, alert: "You are not authorized to take moderation actions."
