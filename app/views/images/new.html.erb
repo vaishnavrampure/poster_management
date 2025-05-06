@@ -3,16 +3,13 @@
 
   <%= form_with(model: @image, url: campaign_images_path(@campaign), local: true, html: { multipart: true }) do |form| %>
     
-    <!-- Set contractor_id silently to the current logged-in user -->
     <%= form.hidden_field :contractor_id, value: current_user.id %>
 
-    <!-- File input -->
     <div class="mb-3">
       <%= form.label :file, "File", class: "form-label fw-bold" %>
       <%= form.file_field :file, class: "form-control" %>
     </div>
 
-    <!-- Submit button -->
     <%= form.submit "Upload Image", class: "btn btn-primary" %>
   <% end %>
 </div>

@@ -1,15 +1,13 @@
-<h1>Main Campaign: <%= @campaign.name %></h1>
+<h1> Campaign Name: <%= @campaign.name %></h1>
 <p>Status: <%= @campaign.status %></p>
 
-
-  <%= link_to "Back to All Dashboard",dashboard_path, class: "btn btn-primary mb-4" %>
-
+<%= link_to "Back to All Dashboard", dashboard_path, class: "btn btn-primary btn-sm mb-4" %>
 
 <% if current_user.has_permission?("upload:campaign_image") && @campaign.status != "Completed" %>
-  <%= link_to "Upload New Image", new_campaign_image_path(@campaign), class: "btn btn-success" %>
+  <%= link_to "Upload New Image", new_campaign_image_path(@campaign), class: "btn btn-success btn-sm mb-4 ms-2" %>
 <% end %>
 
-<hr>
+
 <h2>Images for This Campaign</h2>
 
 <% if @campaign.images.any? %>
