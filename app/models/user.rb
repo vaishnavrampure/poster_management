@@ -90,8 +90,8 @@ end
       ]
     }
 
-   perms = Permission.where(name: roles_with_permissions[role_name])
-  role.permissions = []
-  role.permissions << perms
+    perms = Permission.where(name: roles_with_permissions[role_name])
+    role.permissions = perms
+    
   end
 end

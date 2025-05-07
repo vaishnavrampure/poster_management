@@ -1,4 +1,4 @@
-<div class="container mt-4">
+<div class="container mt-4"> 
   <% campaigns =
     if current_user.admin? || current_user.employee?
       Campaign.all
@@ -18,51 +18,7 @@
 
   <div class="card shadow-sm">
     <div class="card-body">
-      <ul class="list-group list-group-flush">
-        <% if current_user.has_permission?("manage:users") %>
-          <li class="list-group-item">
-            <%= link_to "Manage Users", users_path, class: "text-decoration-none" %>
-          </li>
-        <% end %>
-
-        <% if current_user.has_permission?("manage:campaigns") %>
-          <li class="list-group-item">
-            <%= link_to "Manage Campaigns", campaigns_path, class: "text-decoration-none" %>
-          </li>
-        <% end %>
-
-        <% if current_user.has_permission?("manage:client_companies") %>
-          <li class="list-group-item">
-            <%= link_to "Manage Clients", clients_path, class: "text-decoration-none" %>
-          </li>
-        <% end %>
-
-        <% if !current_user.client? && current_user.has_permission?("view:images") %>
-          <li class="list-group-item">
-            <%= link_to "View Images", images_path, class: "text-decoration-none" %>
-          </li> 
-        <% end %>
-
-        <% if current_user.has_permission?("approve:image") || current_user.has_permission?("reject:image") || current_user.contractor? || current_user.client? %>
-          <li class="list-group-item">
-            <%= link_to "Approve/Reject Images", moderation_queue_images_path, class: "text-decoration-none" %>
-          </li>
-          <li class="list-group-item">
-            <%= link_to "Image History", moderation_history_images_path, class: "text-decoration-none" %>
-          </li>
-        <% end %>
-
-        <% if (current_user.has_permission?("view:images") || current_user.contractor? || current_user.client?) && campaigns.any? %>
-          <% campaigns.each do |campaign| %>
-            <li class="list-group-item">
-              <%= link_to "Image Status (#{campaign.name})", campaign_images_path(campaign), class: "text-decoration-none" %>
-            </li>
-          <% end %>
-        <% end %>
-      </ul>
-    </div>
-  </div>
-
+  <!-- Campaign Overview Section -->
   <% if current_user.has_permission?("view:campaigns") %>
     <div class="card mt-4 shadow-sm">
       <div class="card-body">
@@ -99,6 +55,7 @@
     </div>
   <% end %>
 
+  <!-- Logout Button -->
   <div class="text-center mt-4">
     <%= form_with url: logout_path, method: :delete, local: true do %>
       <%= submit_tag 'Logout', class: "btn btn-outline-danger" %>

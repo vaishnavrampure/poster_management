@@ -3,18 +3,47 @@
 <% @images.each do |image| %>
   <div class="card mb-3 p-3">
     <% if image.file.attached? %>
-      <%= image_tag image.file, width: 300 %>
+      <%= image_tag image.file, width: 300, class: "img-thumbnail" %>
     <% else %>
       <p class="text-muted">No file attached.</p>
     <% end %>
 
-    <p><strong>Status:</strong> <%= image.status.capitalize %></p>
+    <p>
+      <strong>Status:</strong>
+      <% if image.status == "approved" %>
+        <span class="badge bg-success">Approved</span>
+      <% elsif image.status == "rejected" %>
+        <span class="badge bg-danger">Rejected</span>
+      <% else %>
+        <span class="badge bg-secondary">Pending</span>
+      <% end %>
+    </p>
 
     <% if image.status == "rejected" && image.rejection_reason.present? %>
-  <p><strong>Rejection Note:</strong> <%= image.rejection_reason %></p>
-<% end %>
+      <p><strong>Rejection Note:</strong> <%= image.rejection_reason %></p>
+    <% end %>
+
+    <!-- Approve/Reject Buttons -->
+    <div class="mt-2">
+      <% if current_user.has_permission?("approve:image") || current_user.has_permission?("reject:image") %>
+        <%= button_to approve_image_path(image), method: :post,
+            class: "btn btn-sm me-2 #{image.status == 'approved' ? 'btn-success' : 'btn-outline-success'}" do %>
+          ✅
+        <% end %>
+
+        <%= button_to reject_image_path(image), method: :post,
+            class: "btn btn-sm #{image.status == 'rejected' ? 'btn-danger' : 'btn-outline-danger'}" do %>
+          ❌
+        <% end %>
+
+      <% elsif image.status.present? %>
+        <%= button_tag "✅", class: "btn btn-sm me-2 #{image.status == 'approved' ? 'btn-success' : 'btn-outline-secondary'}", disabled: true %>
+        <%= button_tag "❌", class: "btn btn-sm #{image.status == 'rejected' ? 'btn-danger' : 'btn-outline-secondary'}", disabled: true %>
+      <% end %>
+    </div>
   </div>
 <% end %>
+
 <div class="mt-4 text-center">
   <%= link_to "Back to Dashboard", dashboard_path, class: "btn btn-secondary" %>
-</div
+</div>

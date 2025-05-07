@@ -43,24 +43,35 @@ class ImagesController < ApplicationController
   end
 
   def approve
-    image = Image.find(params[:id])
-    image.update!(status: "approved")
-    redirect_to moderation_queue_images_path, notice: "Image approved."
+    @image = Image.find(params[:id])
+    authorize_action!("approve:image")
+  
+    @image.update(status: "approved", rejection_reason: nil)
+    redirect_back fallback_location: dashboard_path, notice: "Image approved."
   end
-
+  
   def reject
     @image = Image.find(params[:id])
-    rejection_reason = params[:image][:rejection_reason].presence
-
+    authorize_action!("reject:image")
+  
+    rejection_reason = nil # or params[:rejection_reason].presence if you later add it
+  
     if @image.update(status: "rejected", rejection_reason: rejection_reason)
-      notice_msg = "Image rejected" + (rejection_reason.present? ? " with reason." : ".")
-      redirect_to moderation_history_images_path, notice: notice_msg
+      notice_msg = "Image rejected."
+      redirect_back fallback_location: dashboard_path, notice: notice_msg
     else
-      redirect_to moderation_history_images_path, alert: @image.errors.full_messages.to_sentence
+      redirect_back fallback_location: dashboard_path, alert: "Failed to reject image."
     end
   end
-
+  
   private
+  
+  def authorize_action!(perm)
+    unless current_user.has_permission?(perm)
+      redirect_back fallback_location: root_path, alert: "Not authorized."
+    end
+  end
+  
 
   def set_campaign
     @campaign = Campaign.find(params[:campaign_id])
@@ -78,13 +89,6 @@ class ImagesController < ApplicationController
            current_user.contractor? ||
            current_user.client?
       redirect_to dashboard_path, alert: "You are not authorized to view moderation."
-    end
-  end
-  
- def authorize_moderation_action
-    unless current_user.has_permission?("approve:image") ||
-           current_user.has_permission?("reject:image")
-      redirect_to dashboard_path, alert: "You are not authorized to take moderation actions."
     end
   end
 end

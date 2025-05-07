@@ -12,7 +12,8 @@
           <%= submit_tag "Approve", class: "btn btn-success" %>
         <% end %>
       <% elsif current_user.client? %>
-        <button class="btn btn-success" disabled>Approve</button>
+        <%= button_to "✔️", approve_image_path(image), method: :post,
+    class: "btn btn-sm me-2 #{image.status == 'approved' ? 'btn-success' : 'btn-outline-success'}" %>
       <% end %>
 
       <% if current_user.has_permission?("reject:image") %>
@@ -23,7 +24,8 @@
         <% end %>
       <% elsif current_user.client? %>
         <input type="text" class="form-control me-2" placeholder="Reason" disabled />
-        <button class="btn btn-danger" disabled>Reject</button>
+          <%= button_to "❌", reject_image_path(image), method: :post,
+    class: "btn btn-sm #{image.status == 'rejected' ? 'btn-danger' : 'btn-outline-danger'}" %>
       <% end %>
     </div>
   </div>

@@ -1,15 +1,21 @@
 permission_names = %w[
-  manage:users
-  manage:campaigns
-  view:campaigns
-  update:campaign
-  update:user
-  update:client_companies
-  manage:client_companies
-  view:images
-  approve:image
-  reject:image
-  upload:campaign_image
+   manage:users
+    create:user
+    delete:user
+    delete:campaign
+    delete:client_company
+    manage:campaigns
+    create:campaign
+    manage:client_companies
+    update:campaign
+    update:user
+    update:client_companies
+    create:client_companies
+    view:campaigns
+    view:images
+    approve:image
+    reject:image
+
 ]
 
 permissions = permission_names.map do |name|
