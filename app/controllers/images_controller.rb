@@ -66,11 +66,11 @@ class ImagesController < ApplicationController
   
   private
   
-  def authorize_action!(perm)
-    unless current_user.has_permission?(perm)
-      redirect_back fallback_location: root_path, alert: "Not authorized."
-    end
-  end
+def authorize_action!(perm)
+  return if current_user.has_permission?(perm)
+
+  redirect_back fallback_location: root_path, alert: "Not authorized." and return
+end
   
 
   def set_campaign

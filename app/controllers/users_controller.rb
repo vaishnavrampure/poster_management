@@ -49,8 +49,6 @@ class UsersController < ApplicationController
       selected_campaign_ids.each do |campaign_id|
         campaign = Campaign.find_by(id: campaign_id)
         next unless campaign
-
-        # ✅ Enforce company match for client role
         if role_name == "client" && campaign.client_company_id != @user.client_company_id
           next
         end
