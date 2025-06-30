@@ -48,7 +48,7 @@ end
 
 
 
-gem "jwt", "~> 2.10"
+gem "jwt", "~> 3.1"
 gem 'bcrypt', '~> 3.1.7'
 
 gem "turbo-rails", "~> 2.0"
